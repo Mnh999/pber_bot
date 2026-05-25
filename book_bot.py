@@ -9,7 +9,7 @@ from openai import OpenAI
 TOKEN = os.environ.get("BOT_TOKEN")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-# Создаём клиента OpenRouter только если есть ключ
+# Настройка клиента OpenRouter
 if OPENROUTER_API_KEY:
     client = OpenAI(
         base_url="https://openrouter.ai/api/v1",
@@ -27,6 +27,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "📚 Привет! Я ИИ-бот по книгам!\n\n"
         "1. Отправь мне PDF-файл книги\n"
         "2. Задавай любые вопросы по содержанию\n\n"
+        "🤖 Отвечаю с помощью нейросети Google Gemini 2.0 Flash.\n"
         "⚡ Бесплатный тариф: ~50 вопросов в день."
     )
 
@@ -64,11 +65,11 @@ async def ask_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     question = update.message.text
-    await update.message.reply_text("🤔 Анализирую книгу... (ИИ-модель)")
+    await update.message.reply_text("🤔 Анализирую книгу... (нейросеть)")
 
     try:
         response = client.chat.completions.create(
-            model="mistralai/mistral-7b-instruct:free",
+            model="google/gemini-2.0-flash-exp:free",
             messages=[
                 {"role": "system", "content": f"Ты — помощник. Отвечай на вопросы строго на основе текста книги. Не выдумывай фактов. Вот текст книги:\n\n{book_text}"},
                 {"role": "user", "content": question}
