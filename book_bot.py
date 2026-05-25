@@ -9,11 +9,14 @@ from openai import OpenAI
 TOKEN = os.environ.get("BOT_TOKEN")
 OPENROUTER_API_KEY = os.environ.get("OPENROUTER_API_KEY")
 
-# Настройка клиента OpenRouter
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=OPENROUTER_API_KEY,
-)
+# Создаём клиента OpenRouter только если есть ключ
+if OPENROUTER_API_KEY:
+    client = OpenAI(
+        base_url="https://openrouter.ai/api/v1",
+        api_key=OPENROUTER_API_KEY,
+    )
+else:
+    client = None
 
 logging.basicConfig(level=logging.INFO)
 
@@ -53,7 +56,7 @@ async def ask_question(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("Сначала отправь PDF-книгу.")
         return
 
-    if not OPENROUTER_API_KEY:
+    if not client:
         await update.message.reply_text(
             "❌ OpenRouter API ключ не настроен.\n"
             "Добавьте переменную OPENROUTER_API_KEY в настройках Render."
